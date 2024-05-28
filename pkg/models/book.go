@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+
 	"github/fokaz-c/go-book-manager/pkg/config"
 
 	"gorm.io/gorm"
@@ -10,7 +12,7 @@ var db *gorm.DB
 
 type Book struct {
 	gorm.Model
-	Name        string `gorm:"" json:"name"`
+	Name        string `json:"name"`
 	Author      string `json:"author"`
 	Publication string `json:"publication"`
 }
@@ -18,11 +20,12 @@ type Book struct {
 func init() {
 	config.Connect()
 	db = config.GetDB()
-	db.AutoMigrate(&Book{})
+	if err := db.AutoMigrate(&Book{}); err != nil {
+		fmt.Printf("Failed to migrate Book schema: %v\n", err)
+	}
 }
 
 func (b *Book) CreateBook() (*Book, error) {
-	// Create a new book record
 	result := db.Create(b)
 	if result.Error != nil {
 		return nil, result.Error
@@ -31,19 +34,19 @@ func (b *Book) CreateBook() (*Book, error) {
 }
 
 func GetAllBooks() []Book {
-	var Books []Book
-	db.Find(&Books)
-	return Books
+	var books []Book
+	db.Find(&books)
+	return books
 }
 
-func GetBookByID(Id int64) (*Book, *gorm.DB) {
+func GetBookByID(id int64) (*Book, *gorm.DB) {
 	var getBook Book
-	db := db.Where("ID=?", Id).Find(&getBook)
+	db := db.Where("ID = ?", id).Find(&getBook)
 	return &getBook, db
 }
 
-func DeleteBook(ID int64) Book {
+func DeleteBook(id int64) Book {
 	var book Book
-	db.Where("ID=?", ID).Delete(book)
+	db.Where("ID = ?", id).Delete(&book)
 	return book
 }

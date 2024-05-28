@@ -13,7 +13,7 @@ import (
 
 var NewBook models.Book
 
-func GetBook(w http.ResponseWriter, r *http.Request) {
+func GetAllBooks(w http.ResponseWriter, r *http.Request) {
 	newBooks := models.GetAllBooks()
 	res, _ := json.Marshal(newBooks)
 	w.Header().Set("Content-Type", "pkglication/json")
@@ -36,10 +36,27 @@ func GetBookByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateBook(w http.ResponseWriter, r *http.Request) {
-	CreateBook := &models.Book{}
-	utils.ParseBody(r, CreateBook)
-	b, _ := CreateBook.CreateBook()
-	res, _ := json.Marshal(b)
+
+	newBook := &models.Book{}
+
+	if err := utils.ParseBody(r, newBook); err != nil {
+		http.Error(w, "Failed to parse request body", http.StatusBadRequest)
+		return
+	}
+
+	createdBook, err := newBook.CreateBook()
+	if err != nil {
+		http.Error(w, "Failed to create book", http.StatusInternalServerError)
+		return
+	}
+
+	res, err := json.Marshal(createdBook)
+	if err != nil {
+		http.Error(w, "Failed to marshal response", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(res)
 }
