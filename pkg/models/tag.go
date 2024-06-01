@@ -7,7 +7,7 @@ import (
 )
 
 type Tag struct {
-	Name  string `gorm:"unique;not null" json:"name"`
+	Tag   string `gorm:"unique;not null" json:"tag"`
 	Books string `json:"books"`
 }
 

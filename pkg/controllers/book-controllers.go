@@ -89,11 +89,8 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 	if updateBook.Name != "" {
 		booksDetail.Name = updateBook.Name
 	}
-	if updateBook.Author != "" {
-		booksDetail.Author = updateBook.Author
-	}
-	if updateBook.Publication != "" {
-		booksDetail.Publication = updateBook.Publication
+	if updateBook.Path != "" {
+		booksDetail.Path = updateBook.Path
 	}
 
 	db.Save(&booksDetail)
