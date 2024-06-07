@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github/fokaz-c/go-book-manager/pkg/config"
+
+	"gorm.io/gorm"
 )
 
 type Tag struct {
@@ -25,4 +27,22 @@ func (t *Tag) CreateTag() (*Tag, error) {
 		return nil, result.Error
 	}
 	return t, nil
+}
+
+func GetAllTags() []Tag {
+	var books []Tag
+	db.Find(&books)
+	return books
+}
+
+func GetTagByID(tag string) (*Tag, *gorm.DB) {
+	var getTag Tag
+	db := db.Where("tag = ?", tag).Find(&getTag)
+	return &getTag, db
+}
+
+func DeleteTag(tag string) Tag {
+	var _tag Tag
+	db.Where("tag = ?", tag).Delete(&_tag)
+	return _tag
 }
